@@ -1,0 +1,30 @@
+# Build log
+
+Times are Arizona time on Wednesday, November 25, 2026. Brief and data pack received that morning; Hannah Benson (Agilyti) asked for the build within 5 days.
+
+| Time | What happened | Decision / why |
+|---|---|---|
+| 07:16 | Read the brief and profiled all 13 tabs of the data pack in Python. | Picked **Scenario A**. It's where operations, contracts and people collide, problems surface in front of residents and the owner on day one, and it fits my background (multi-site operations, vendor and contract management, renewal tracking). B had crisper dollar catches but is an accounting tool; C's honest answer is "our track record doesn't support this RFP." |
+| 07:20 | Audited A1/A2/A3 and counted every problem independently (pandas). | This became the **answer key** the app is tested against. Learned: 3 different export formats in one rent roll; 129 of 237 occupied leases past their end date; 6 auto-renew windows already missed; tracker statuses that contradict the other tabs. Decided **not** to flag repeated resident names: the synthetic name generator repeats names, so it's not a real finding. |
+| 07:24 | Chose the format: one web page, rules engine separate from UI, AI only for wording. | It needs no install, can be shared as a link, and is stable in a live demo. Deterministic rules mean every flag is explainable and testable. AI is limited to drafting emails, where it adds speed and nothing breaks if it's down. |
+| 07:28 | Reviewed my own instruction file (priority mode, governance list, proposed skills). | Kept: configurable as-of date, traceability, AI fallback, human sends. Changed: Python → browser app (no install, hosted link); a 12-item governance list → 5 controls in the app + a "before production" table; **no new skills**, because 5 of 6 already existed and building them would displace the prototype. |
+| 07:36 | Wrote `engine.js` (rules) and `selftest.js` (answer key). First run: 53/54. | The one failure was the test comparing object key order, not a real defect. Made comparisons order-insensitive. 54/54. |
+| 07:39 | Tuned rules after reading every flagged item by hand. | The welcome-letter "dependency" conflicts are softer than ledger migration, so they're Medium, not High. Non-assignable contracts route to the vendor (new agreement), not the prior manager. |
+| 07:41 | Built the interface: runway chart, action queue, detail with source rows, vendors, rent roll, properties, self-test, how-it-works. | "Act now" = every critical item plus high items due within 21 days, so Monday morning is 20 items, not 109. |
+| 07:44 | Render-tested in headless Chrome (desktop and phone). | **Defects:** runway lane labels collided with the as-of marker → moved labels to a left gutter; dates wrapped in tables → no-wrap; vague vendor decision labels ("Terminate / re-sign") → explicit decisions. |
+| 07:46 | Time-travel test: as-of 11/2 → 16 overdue (the 18 tasks due 11/1 minus 2 complete). As-of 12/1 → 100 overdue. | Confirms the date drives every rule. |
+| 07:48 | Published as a Claude artifact and turned on "Use Claude" for drafting. Library loads from cdnjs with a bundled offline copy as fallback. | |
+| 07:49 | Tested AI drafting live in Claude. | **Defect found:** the AI morning brief listed Asset staff (M. Odom, S. Alvarez, L. Ford) under "Prior manager," because the data field was named "owner." Fix: renamed fields (`asset_living_staff_owner`, `party_that_must_act`) and added an explicit rule. Re-tested live: fixed. |
+| 07:50 | **Defect found:** the detail panel's bottom (the draft box) was unreachable inside Claude's viewer, which sizes the frame to the page. Fix: removed the sticky panel and scroll it into view on selection. | |
+| 07:51 | Tested the AI failure paths with a simulated model. (1) A draft containing an invented "$5,100" and "Dec 9": the fact check flagged both. (2) No AI available: the template appears and everything else works. | |
+| 07:53 | README, build log, test results, demo and panel prep. | |
+
+## Where AI helped and where it got in the way
+
+- **Helped:** writing the engine and the interface quickly; drafting emails that read like a person wrote them; turning a rules-based list into a readable morning brief.
+- **Got in the way:** the AI brief confidently misattributed people (caught in testing, fixed with better field names). The fix was to treat the AI as a writer of words, never a source of facts, and to check its numbers automatically.
+- **The pattern I'd take into the role:** deterministic rules decide; AI drafts; a fact check verifies; a person sends.
+
+## Time spent
+
+About 40 minutes from first read to a tested, hosted build. [Add: time for the video, rehearsal and any changes you make.]

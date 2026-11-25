@@ -1,0 +1,16 @@
+{
+  "name": "transition-command-center",
+  "version": "1.0.0",
+  "description": "Asset Living build exercise, Scenario A: Transition Command Center",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "node tests/run_tests.js"
+  },
+  "license": "UNLICENSED",
+  "dependencies": {
+    "xlsx": "^0.18.5"
+  },
+  "private": true
+}

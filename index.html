@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Transition Command Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE: a calm operations instrument for a Director of Transitions on Monday morning.
+   IDEA: a runway from "as of" to takeover day, with every deadline dropped onto it.
+   PICTURE: the runway chart, as-of pointer in orange, takeover line in black.
+   COLOUR and TYPE: aluminium and white, black ink, one orange pointer; severity in red, amber, slate. Geist.
+   LAYOUT: controls and runway first, the action queue second, detail beside it on wide screens. */
+:root{color-scheme:light;--bg:#ffffff;--al:#e9eaec;--al2:#f4f5f6;--ink:#111214;--mute:#5b616b;--line:#d5d7db;--or:#ff4f00;
+  --crit:#b42318;--critbg:#fdecea;--high:#9a4a00;--highbg:#fff3e0;--med:#475467;--medbg:#eef0f3;--ok:#1f7a3a;--okbg:#e8f5ec}
+*{box-sizing:border-box;min-width:0}
+html{scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Geist,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;overflow-x:clip}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--or);outline-offset:2px}
+.band{padding:clamp(18px,3vw,32px) max(4vw,16px)}
+.wrap{max-width:1240px;margin:0 auto}
+header.band{background:var(--al);border-bottom:1px solid var(--line);padding-bottom:12px}
+.top{display:flex;flex-wrap:wrap;gap:16px 28px;align-items:flex-end;justify-content:space-between}
+h1{font-size:clamp(26px,3.4vw,38px);line-height:1.05;margin:0;font-weight:600;letter-spacing:-.01em;text-wrap:balance}
+.sub{color:var(--mute);margin:6px 0 0}
+.controls{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:flex-end}
+.ctl{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--mute)}
+.ctl input[type=date]{height:44px;padding:0 10px;border:1px solid #b9bdc4;border-radius:8px;background:#fff;font-size:16px;color:var(--ink)}
+.btn{height:44px;padding:0 16px;border-radius:8px;border:1px solid var(--ink);background:var(--ink);color:#fff;font-weight:500;white-space:nowrap}
+.btn.ghost{background:#fff;color:var(--ink);border-color:#b9bdc4}
+.btn.small{height:36px;padding:0 12px;font-size:14px}
+.btn:disabled{opacity:.5;cursor:default}
+.srcline{font-size:13px;color:var(--mute);margin-top:10px;display:flex;flex-wrap:wrap;gap:6px 14px}
+.srcline b{color:var(--ink);font-weight:500}
+.err{background:var(--critbg);border:1px solid #f3b4ac;color:var(--crit);border-radius:8px;padding:12px 14px;margin-top:12px}
+.runway-box{background:#fff;border:1px solid var(--line);border-radius:12px;margin-top:16px;padding:10px 12px 4px}
+.runway-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;align-items:baseline}
+.runway-head h2{font-size:15px;margin:0;font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:13px;color:var(--mute)}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:-1px;margin-right:5px}
+.fig{position:relative;height:250px}
+.fig>svg{position:absolute;inset:0;width:100%;height:100%}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:14px}
+.tile{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.tile .n{font-size:clamp(22px,2.6vw,28px);font-weight:600;line-height:1.1;white-space:nowrap}
+.tile .l{font-size:13px;color:var(--mute)}
+.tile.warn .n{color:var(--crit)}
+nav.tabs{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid var(--line)}
+nav.tabs .wrap{display:flex;gap:4px;overflow-x:auto;padding:0 max(4vw,16px)}
+nav.tabs button{flex:none;border:0;background:none;height:48px;padding:0 14px;border-bottom:3px solid transparent;color:var(--mute);font-weight:500}
+nav.tabs button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--ink)}
+.count{display:inline-block;min-width:22px;padding:0 6px;margin-left:6px;border-radius:11px;background:var(--al);font-size:12px;line-height:20px;text-align:center}
+main .band{padding-top:18px}
+.panel[hidden]{display:none}
+.bar{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;margin-bottom:12px}
+.seg{display:inline-flex;border:1px solid #b9bdc4;border-radius:8px;overflow:hidden}
+.seg button{border:0;background:#fff;height:40px;padding:0 12px;font-size:14px;white-space:nowrap}
+.seg button+button{border-left:1px solid #b9bdc4}
+.seg button[aria-pressed=true]{background:var(--ink);color:#fff}
+select,input[type=search]{height:40px;border:1px solid #b9bdc4;border-radius:8px;background:#fff;padding:0 10px;font-size:16px;max-width:100%}
+.split{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:16px;align-items:start}
+@media(max-width:900px){.split{grid-template-columns:minmax(0,1fr)}}
+.list{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff}
+.group{background:var(--al2);font-size:13px;font-weight:600;padding:8px 12px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between}
+.item{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:4px 10px;padding:10px 12px;border-bottom:1px solid var(--line);width:100%;text-align:left;background:#fff;border-left:4px solid transparent}
+.item:hover{background:#fafbfc}
+.item[aria-current=true]{background:#fff7f2;border-left-color:var(--or)}
+.item .t{font-weight:500}
+.item .m{grid-column:2/4;font-size:13px;color:var(--mute)}
+.item .d{font-size:13px;white-space:nowrap;text-align:right}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:1px 8px;border-radius:10px;white-space:nowrap;line-height:20px}
+.pill.Critical{background:var(--critbg);color:var(--crit)}.pill.High{background:var(--highbg);color:var(--high)}.pill.Medium{background:var(--medbg);color:var(--med)}
+.pill.ok{background:var(--okbg);color:var(--ok)}
+.late{color:var(--crit);font-weight:600}
+.detail{border:1px solid var(--line);border-radius:12px;background:#fff;padding:16px;scroll-margin-top:60px}
+.detail h3{font-size:19px;line-height:1.25;margin:6px 0 4px}
+.kv{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:4px 12px;font-size:14px;margin:10px 0}
+.kv dt{color:var(--mute)}.kv dd{margin:0}
+.reasons{margin:8px 0 12px;padding:0;list-style:none}
+.reasons li{padding:8px 10px;border-radius:8px;background:var(--al2);margin-bottom:6px;font-size:14px}
+.reasons li .pill{margin-right:6px}
+.ev{font-size:13px;border:1px solid var(--line);border-radius:8px;margin:6px 0;overflow:hidden}
+.ev summary{padding:6px 10px;cursor:pointer;background:var(--al2)}
+.ev table{width:100%;border-collapse:collapse}
+.ev td{padding:3px 10px;border-top:1px solid #eceef1;vertical-align:top}
+.ev td:first-child{color:var(--mute);width:42%}
+.h4{font-size:13px;font-weight:600;color:var(--mute);margin:14px 0 6px}
+textarea{width:100%;min-height:230px;border:1px solid #b9bdc4;border-radius:8px;padding:10px;font-size:15px;line-height:1.45;resize:vertical}
+.note{font-size:13px;color:var(--mute)}
+.aiflag{font-size:13px;background:#fff7f2;border:1px solid #ffd2bd;border-radius:8px;padding:8px 10px;margin:8px 0}
+.check{font-size:13px;border-radius:8px;padding:8px 10px;margin:8px 0}
+.check.good{background:var(--okbg);color:var(--ok)}.check.bad{background:var(--critbg);color:var(--crit)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+table.grid{width:100%;border-collapse:collapse;font-size:14px;background:#fff}
+table.grid th{position:sticky;top:0;background:var(--al2);text-align:left;font-weight:600;font-size:13px;padding:8px;border-bottom:1px solid var(--line);white-space:nowrap}
+table.grid td{padding:7px 8px;border-bottom:1px solid #eceef1;vertical-align:top}
+table.grid td.num,table.grid th.num{text-align:right;white-space:nowrap}
+table.grid tr.click{cursor:pointer}table.grid tr.click:hover td{background:#fafbfc}
+.nw,#vendTable td:nth-child(5),#vendTable td:nth-child(7),#vendTable td:nth-child(8),#rentTable td:nth-child(8),#rentTable td:nth-child(9){white-space:nowrap}
+.scroll{overflow:auto;border:1px solid var(--line);border-radius:12px;max-height:620px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.card{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:#fff;border-top:5px solid var(--line)}
+.card.red{border-top-color:var(--crit)}.card.amber{border-top-color:#d97706}.card.green{border-top-color:var(--ok)}
+.card h3{font-size:16px;margin:0}
+.meter{height:8px;background:var(--al);border-radius:4px;overflow:hidden;margin:6px 0 2px}
+.meter>span{display:block;height:100%;background:var(--ink)}
+.prose{max-width:820px}
+.prose h2{font-size:22px;margin:22px 0 8px}
+.prose h3{font-size:16px;margin:18px 0 6px}
+.prose p,.prose li{font-size:15px}
+.callout{background:var(--al2);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.brief{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:#fff;margin-bottom:12px}
+.brief pre{white-space:pre-wrap;font:inherit;margin:6px 0 0}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:8px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:20}
+.toast.on{opacity:1}
+@media(prefers-reduced-motion:reduce){.toast{transition:none}}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+footer{color:var(--mute);font-size:13px;border-top:1px solid var(--line)}
+@media(max-width:600px){table.grid{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px;border-bottom:1px solid var(--line)}.stack td{display:flow-root;border:0;padding:3px 8px;padding-inline-start:8.5em;text-align:start!important}.stack td::before{content:attr(data-l);float:inline-start;width:8em;margin-inline-start:-8.5em;color:var(--mute);white-space:normal}.stack td:empty{display:none}.fig{height:230px}}
+</style>
+<script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script>
+</head>
+<body>
+<header class="band">
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <h1>Transition Command Center</h1>
+        <p class="sub">Nine-property Texas takeover · for the Director of Transitions and the incoming regional manager</p>
+      </div>
+      <div class="controls">
+        <label class="ctl">As of<input type="date" id="asOf" value="2026-10-16"></label>
+        <label class="ctl">Takeover<input type="date" id="takeover" value="2026-12-01"></label>
+        <button class="btn ghost" id="usePack" type="button">Use data pack</button>
+        <label class="btn" for="file" style="display:inline-flex;align-items:center" tabindex="0" id="fileLbl">Upload export</label>
+        <input type="file" id="file" accept=".xlsx,.xls" class="sr">
+      </div>
+    </div>
+    <div class="srcline" id="srcline">Loading…</div>
+    <div id="errors"></div>
+    <div class="runway-box">
+      <div class="runway-head">
+        <h2 id="runwayTitle">Runway to takeover</h2>
+        <div class="legend"><span><span class="dot" style="background:var(--crit)"></span>Critical</span><span><span class="dot" style="background:#d97706"></span>High</span><span><span class="dot" style="background:#98a2b3"></span>Medium / no issue</span><span><span class="dot" style="background:var(--or)"></span>As of</span></div>
+      </div>
+      <div class="fig" id="runwayFig"><svg id="runway" role="img" aria-label="Timeline of deadlines between the as-of date and takeover"></svg></div>
+    </div>
+    <div class="tiles" id="tiles"></div>
+  </div>
+</header>
+<nav class="tabs" aria-label="Views"><div class="wrap" role="tablist" id="tabs">
+  <button role="tab" data-tab="today" aria-selected="true">Today<span class="count" id="cToday"></span></button>
+  <button role="tab" data-tab="vendors" aria-selected="false">Vendors<span class="count" id="cVend"></span></button>
+  <button role="tab" data-tab="rent" aria-selected="false">Rent roll<span class="count" id="cRent"></span></button>
+  <button role="tab" data-tab="props" aria-selected="false">Properties</button>
+  <button role="tab" data-tab="test" aria-selected="false">Self-test<span class="count" id="cTest"></span></button>
+  <button role="tab" data-tab="about" aria-selected="false">How it works</button>
+</div></nav>
+<main>
+  <section class="band panel" id="p-today"><div class="wrap">
+    <div class="brief" id="briefBox">
+      <div class="row" style="justify-content:space-between"><strong>Morning brief</strong>
+        <div class="row"><button class="btn small" id="briefAI" type="button">Write brief with AI</button><button class="btn small ghost" id="briefCopy" type="button">Copy</button></div></div>
+      <pre id="briefText"></pre>
+      <div class="note" id="briefNote"></div>
+    </div>
+    <div class="bar">
+      <div class="seg" role="group" aria-label="Scope" id="scopeSeg">
+        <button type="button" data-v="now" aria-pressed="true">Act now</button>
+        <button type="button" data-v="hi" aria-pressed="false">All critical &amp; high</button>
+        <button type="button" data-v="all" aria-pressed="false">Everything</button>
+      </div>
+      <select id="fActor" aria-label="Who has to act"><option value="">Anyone acts</option><option>Asset team</option><option>Prior manager</option><option>Owner</option><option>Vendor</option></select>
+      <select id="fProp" aria-label="Property"><option value="">All properties</option></select>
+      <select id="fReview" aria-label="Review status"><option value="">Any review status</option><option>Open</option><option>In review</option><option>Resolved</option><option>Dismissed</option></select>
+      <input type="search" id="fQ" placeholder="Search" aria-label="Search the queue">
+      <button class="btn small ghost" id="copyQueue" type="button">Copy queue (CSV)</button>
+    </div>
+    <div class="split">
+      <div class="list" id="queue"></div>
+      <div class="detail" id="detail"><p class="note">Pick an item to see why it was flagged, the source rows, and a draft email.</p></div>
+    </div>
+  </div></section>
+
+  <section class="band panel" id="p-vendors" hidden><div class="wrap">
+    <div class="bar" id="vendSummary"></div>
+    <div class="bar"><select id="vProp" aria-label="Property"><option value="">All properties</option></select>
+      <select id="vDec" aria-label="Decision"><option value="">All decisions</option></select>
+      <button class="btn small ghost" id="copyVend" type="button">Copy table (CSV)</button></div>
+    <div class="scroll"><table class="grid stack" id="vendTable"></table></div>
+    <p class="note">Cancel-by = current term end minus the termination notice days. Until takeover, the prior manager or the owner is the party to these contracts, so they must send any notice. Recommendations are operational, not legal advice; contract language governs.</p>
+  </div></section>
+
+  <section class="band panel" id="p-rent" hidden><div class="wrap">
+    <div class="scroll" style="max-height:none;margin-bottom:14px"><table class="grid stack" id="rentSummary"></table></div>
+    <div class="bar"><div class="seg" role="group" aria-label="Rows" id="rentSeg"><button type="button" data-v="human" aria-pressed="true">Needs a human</button><button type="button" data-v="flag" aria-pressed="false">Any flag</button><button type="button" data-v="all" aria-pressed="false">All units (clean)</button></div>
+      <select id="rProp" aria-label="Property"><option value="">All properties</option></select>
+      <button class="btn small ghost" id="copyClean" type="button">Copy clean rent roll (CSV)</button>
+      <button class="btn small ghost" id="copyExc" type="button">Copy exceptions (CSV)</button></div>
+    <div class="scroll"><table class="grid stack" id="rentTable"></table></div>
+    <p class="note">The clean file keeps the prior manager's values and adds standardized columns beside them (status, dates as YYYY-MM-DD, money as numbers, a unit key without "Apt"/"#"). Nothing is changed silently: every change is visible next to the original.</p>
+  </div></section>
+
+  <section class="band panel" id="p-props" hidden><div class="wrap">
+    <div class="cards" id="propCards"></div>
+    <h2 style="font-size:18px;margin:22px 0 8px">Who carries the critical path</h2>
+    <div class="scroll" style="max-height:none"><table class="grid stack" id="loadTable"></table></div>
+    <h2 style="font-size:18px;margin:22px 0 8px">What we can't see yet</h2>
+    <div class="callout" id="blind"></div>
+  </div></section>
+
+  <section class="band panel" id="p-test" hidden><div class="wrap">
+    <div class="bar"><button class="btn small" id="runTest" type="button">Run self-test</button><span class="note" id="testNote"></span></div>
+    <div class="scroll" style="max-height:none"><table class="grid stack" id="testTable"></table></div>
+  </div></section>
+
+  <section class="band panel" id="p-about" hidden><div class="wrap prose" id="about"></div></section>
+</main>
+<footer class="band"><div class="wrap">Prototype built for the Asset Living build exercise. All data is the synthetic data pack. Runs entirely in the browser; only the facts of one flagged item are sent to Claude when you ask for a draft.</div></footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>window.XLSX || document.write('<script src="vendor/xlsx.full.min.js"><\/script>')</script>
+<script src="data/datapack.js"></script>
+<script src="app/engine.js"></script>
+<script src="app/selftest.js"></script>
+<script src="app/app.js"></script>
+</body>
+</html>
