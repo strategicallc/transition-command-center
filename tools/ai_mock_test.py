@@ -3,7 +3,7 @@
 # 2) AI unavailable (template fallback must appear)
 import asyncio, sys
 from playwright.async_api import async_playwright
-MOCK = """window.claude={use:async(n)=>n==='sample'?Object.assign(async(p,o)=>{const t='Subject: VC-5002 renewal\\n\\nHi [CONFIRM: name],\\nMetroFiber renews Nov 5 at $4,746 per month. Please confirm by Dec 9; the fee is $5,100.\\n\\n[Your name]';o&&o.onText&&o.onText({text:t});window.__lastPrompt=p;return {text:t}},{json:null}):null};"""
+MOCK = """window.claude={use:async(n)=>n==='sample'?Object.assign(async(p,o)=>{const t='Subject: VC-5002 renewal\\n\\nHi [CONFIRM: name],\\nMetroFiber renews 11/05/2026 at $4,746 per month. Please confirm by 12/09/2026; the fee is $5,100.\\n\\n[Your name]';o&&o.onText&&o.onText({text:t});window.__lastPrompt=p;return {text:t}},{json:null}):null};"""
 async def main():
     async with async_playwright() as p:
         b = await p.chromium.launch(executable_path='/usr/bin/google-chrome', args=['--allow-file-access-from-files'])

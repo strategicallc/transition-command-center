@@ -17,7 +17,8 @@
   function nice(n) {
     if (n == null) return '';
     var d = new Date(n * DAY);
-    return MON[d.getUTCMonth()] + ' ' + d.getUTCDate() + ', ' + d.getUTCFullYear();
+    var mm = d.getUTCMonth() + 1, dd = d.getUTCDate();
+    return (mm < 10 ? '0' : '') + mm + '/' + (dd < 10 ? '0' : '') + dd + '/' + d.getUTCFullYear(); // MM/DD/YYYY everywhere people read dates
   }
   function parseISOInput(s) { var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(s || '')); return m ? ymd(+m[1], +m[2], +m[3]) : null; }
 
@@ -218,7 +219,7 @@
           : codes.indexOf('NOTICE_DUE_SOON') >= 0 ? c.noticeBy : T;
         addItem({ id: 'C-' + c.id, kind: 'Vendor contract', property: c.property, title: c.vendor + ' — ' + c.service + ' (' + c.id + ')',
           reasons: f, action: rec, emailTo: to, assignee: reviewer ? reviewer.owner : '', deadline: dl,
-          evidence: [{ tab: m3.tab, row: c.row, id: c.id, fields: { Vendor: c.vendor, Service: c.service, 'Monthly Cost': money$(c.monthly), 'Current Term End': iso(c.termEnd), 'Auto-Renew': c.autoRenew, 'Notice (days)': c.noticeDays, 'Last day to cancel (calculated)': iso(c.noticeBy), 'COI Expiration': iso(c.coi), 'Assignable': c.assignable } }] });
+          evidence: [{ tab: m3.tab, row: c.row, id: c.id, fields: { Vendor: c.vendor, Service: c.service, 'Monthly Cost': money$(c.monthly), 'Current Term End': nice(c.termEnd), 'Auto-Renew': c.autoRenew, 'Notice (days)': c.noticeDays, 'Last day to cancel (calculated)': nice(c.noticeBy), 'COI Expiration': nice(c.coi), 'Assignable': c.assignable } }] });
       }
     });
 
@@ -267,7 +268,7 @@
         addItem({ id: 'T-' + t.row, kind: 'Transition task', property: t.property, title: t.task, reasons: f,
           action: t.status === 'Blocked' ? 'Escalate the blocker' : !t.owner ? 'Assign an owner today' : f.some(function (x) { return x.code === 'DEPENDENCY_CONFLICT' || x.code === 'STATUS_CONFLICT'; }) ? 'Verify the status with the owner' : 'Get a start date and a status update',
           emailTo: to, assignee: t.owner, deadline: t.due,
-          evidence: [{ tab: m2.tab, row: t.row, id: 'Row ' + t.row, fields: { Task: t.task, Function: t.func, Owner: t.owner || '(none)', 'Critical Path': t.critical ? 'Y' : 'N', 'Due Date': iso(t.due), Status: t.status, 'Last Updated': iso(t.updated), Notes: t.notes } }] });
+          evidence: [{ tab: m2.tab, row: t.row, id: 'Row ' + t.row, fields: { Task: t.task, Function: t.func, Owner: t.owner || '(none)', 'Critical Path': t.critical ? 'Y' : 'N', 'Due Date': nice(t.due), Status: t.status, 'Last Updated': nice(t.updated), Notes: t.notes } }] });
       }
     });
 
@@ -281,7 +282,7 @@
       if (medCrit != null && l.critical >= Math.max(10, 1.5 * medCrit)) addItem({ id: 'CAP-' + normKey(l.owner), kind: 'Capacity', property: 'Portfolio', title: l.owner + ' owns ' + l.critical + ' open critical-path tasks',
         reasons: [{ code: 'CAPACITY', sev: 'Medium', text: 'The most of anyone (team median is ' + medCrit + '), across ' + l.properties + ' properties (' + l.functions + '). If this person is out, the critical path stalls.' }],
         action: 'Confirm capacity or rebalance', emailTo: 'Asset team', assignee: l.owner, deadline: null,
-        evidence: tasks.filter(function (t) { return t.owner === l.owner && t.status !== 'Complete' && t.critical; }).map(function (t) { return { tab: m2.tab, row: t.row, id: 'Row ' + t.row, fields: { Property: t.property, Task: t.task, 'Due Date': iso(t.due), Status: t.status } }; }) });
+        evidence: tasks.filter(function (t) { return t.owner === l.owner && t.status !== 'Complete' && t.critical; }).map(function (t) { return { tab: m2.tab, row: t.row, id: 'Row ' + t.row, fields: { Property: t.property, Task: t.task, 'Due Date': nice(t.due), Status: t.status } }; }) });
     });
 
     // ================= RENT ROLL RULES =================
@@ -322,7 +323,7 @@
       addItem({ id: 'U-' + normKey(u.property) + '-' + normKey(u.key), kind: 'Rent roll', property: u.property, title: 'Unit ' + u.unit + (u.resident ? ' — ' + u.resident : ''),
         reasons: reasons, action: 'Confirm with the prior manager before loading into Yardi', emailTo: 'Prior manager', assignee: (taskOf(u.property, /final rent roll/i) || {}).owner || '',
         deadline: (taskOf(u.property, /final rent roll/i) || {}).due || T,
-        evidence: rows.map(function (x) { return { tab: m1.tab, row: x.row, id: x.unit, fields: { Unit: x.unit, Status: x.statusRaw + ' → ' + (x.status || '?'), Resident: x.resident || '(blank)', 'Market Rent': money$(x.market), 'Lease Rent': money$(x.rent), 'Lease Start': iso(x.start), 'Lease End': iso(x.end), Deposit: money$(x.deposit), Balance: money$(x.balance) } }; }) });
+        evidence: rows.map(function (x) { return { tab: m1.tab, row: x.row, id: x.unit, fields: { Unit: x.unit, Status: x.statusRaw + ' → ' + (x.status || '?'), Resident: x.resident || '(blank)', 'Market Rent': money$(x.market), 'Lease Rent': money$(x.rent), 'Lease Start': nice(x.start), 'Lease End': nice(x.end), Deposit: money$(x.deposit), Balance: money$(x.balance) } }; }) });
     });
     var GROUPED = { LEASE_ENDED: 'occupied units show a lease end date before the as-of date', LOW_RENT: 'occupied units rent below 60% of market', HIGH_BALANCE: 'residents owe more than a month’s rent', SIZE_MISMATCH: 'units have a size that doesn’t match their floorplan', NO_DEPOSIT: 'occupied units have no deposit' };
     Object.keys(GROUPED).forEach(function (code) {
@@ -334,7 +335,7 @@
           reasons: [{ code: code, sev: 'Medium', text: code === 'LEASE_ENDED' ? 'That is ' + Math.round(100 * L.length / units.filter(function (u) { return u.property === p && u.status === 'Occupied'; }).length) + '% of occupied units. Ask the prior manager whether these are month-to-month, and at what rent and fee. This changes revenue and the renewal workload from day one.' : L[0].flags.filter(function (x) { return x.code === code; })[0].text + (L.length > 1 ? ' (first of ' + L.length + ')' : '') }],
           action: code === 'LEASE_ENDED' ? 'Ask for lease status and month-to-month terms' : code === 'HIGH_BALANCE' ? 'Get the aged delinquency report before cutover' : 'Confirm with the prior manager',
           emailTo: 'Prior manager', assignee: (taskOf(p, /final rent roll/i) || {}).owner || '', deadline: (taskOf(p, /final rent roll/i) || {}).due || T,
-          evidence: L.map(function (u) { return { tab: m1.tab, row: u.row, id: u.unit, fields: { Unit: u.unit, Resident: u.resident || '(blank)', 'Lease End': iso(u.end), 'Lease Rent': money$(u.rent), 'Market Rent': money$(u.market), Balance: money$(u.balance), 'Sq Ft': u.sqft } }; }) });
+          evidence: L.map(function (u) { return { tab: m1.tab, row: u.row, id: u.unit, fields: { Unit: u.unit, Resident: u.resident || '(blank)', 'Lease End': nice(u.end), 'Lease Rent': money$(u.rent), 'Market Rent': money$(u.market), Balance: money$(u.balance), 'Sq Ft': u.sqft } }; }) });
       });
     });
     // properties with no rent roll
@@ -345,7 +346,7 @@
       addItem({ id: 'RR-MISSING', kind: 'Missing data', property: 'Portfolio', title: 'Rent rolls received for ' + (contractProps.length - noRR.length) + ' of ' + contractProps.length + ' properties',
         reasons: [{ code: 'MISSING_RENT_ROLL', sev: 'High', text: 'Nothing yet for: ' + noRR.join(', ') + '. Every check on this page is blind for those properties until the export arrives.' }],
         action: 'Request the remaining rent roll exports', emailTo: 'Prior manager', assignee: rrTask ? rrTask.owner : '', deadline: rrTask ? rrTask.due : T,
-        evidence: noRR.map(function (p) { var t = taskOf(p, /final rent roll/i); return t ? { tab: m2.tab, row: t.row, id: 'Row ' + t.row, fields: { Property: p, Task: t.task, Status: t.status, 'Due Date': iso(t.due) } } : { tab: m2.tab, row: null, id: p, fields: { Property: p } }; }) });
+        evidence: noRR.map(function (p) { var t = taskOf(p, /final rent roll/i); return t ? { tab: m2.tab, row: t.row, id: 'Row ' + t.row, fields: { Property: p, Task: t.task, Status: t.status, 'Due Date': nice(t.due) } } : { tab: m2.tab, row: null, id: p, fields: { Property: p } }; }) });
     }
 
     // ================= PROPERTIES =================

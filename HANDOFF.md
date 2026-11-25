@@ -22,6 +22,8 @@ This is a prototype built on the synthetic data pack. It is not a production sys
 | Anyone with the file can open it | **SSO and roles:** the Director of Transitions sees everything; regional managers see their properties; Procurement sees vendor items; Accounting sees bank, deposit and ledger items. |
 | Public demo page | Internal hosting behind SSO. No public page. |
 
+**Dates:** everything people read and every CSV export uses MM/DD/YYYY. Before the first real Yardi import, confirm that against Asset Living's Yardi import (ETL) template, which controls the final format.
+
 ## 3. Who owns what
 
 | Role | Owns |

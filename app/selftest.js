@@ -9,10 +9,10 @@
   function unitTests(E) {
     var t = [];
     function check(name, actual, expected) { t.push({ group: 'Parsing & date math', name: name, expected: expected, actual: actual, pass: eq(actual, expected) }); }
-    check('Reads MM/DD/YYYY text ("03/14/2025")', E.iso(E.parseDate('03/14/2025').day), '2025-03-14');
-    check('Reads YYYY-MM-DD text ("2026-04-06")', E.iso(E.parseDate('2026-04-06').day), '2026-04-06');
-    check('Reads "2026-04-19 00:00:00"', E.iso(E.parseDate('2026-04-19 00:00:00').day), '2026-04-19');
-    check('Reads a real Excel date (serial 46113)', E.iso(E.parseDate(46113).day), '2026-04-01');
+    check('Reads MM/DD/YYYY text ("03/14/2025")', E.nice(E.parseDate('03/14/2025').day), '03/14/2025');
+    check('Reads YYYY-MM-DD text ("2026-04-06") and shows it as MM/DD/YYYY', E.nice(E.parseDate('2026-04-06').day), '04/06/2026');
+    check('Reads "2026-04-19 00:00:00"', E.nice(E.parseDate('2026-04-19 00:00:00').day), '04/19/2026');
+    check('Reads a real Excel date (serial 46113)', E.nice(E.parseDate(46113).day), '04/01/2026');
     check('Rejects an impossible date ("13/45/2026")', E.parseDate('13/45/2026').fmt, 'unparsed');
     check('Blank date stays blank, not zero', E.parseDate('').day, null);
     check('Reads "$1,334.00" as 1334', E.parseMoney('$1,334.00').val, 1334);
@@ -25,7 +25,7 @@
     var m = E.analyze({ 'A3 Vendor Contracts': [{ 'Contract ID': 'X', 'Property': 'P', 'Vendor': 'V', 'Service': 'S', 'Monthly Cost ($)': 1, 'Current Term End': '2026-11-05', 'Auto-Renew (Y/N)': 'Y', 'Termination Notice (days)': 90 }],
       'A1 Rent Roll': [{ Property: 'P', Unit: '1', 'Unit Status': 'O', 'Market Rent': 1, 'Lease Rent': 1, 'Lease Start': '2026-01-01', 'Lease End': '2026-12-31' }],
       'A2 Transition Checklist': [{ Property: 'P', Task: 't', 'Due Date': '2026-11-01', Status: 'Not Started' }] }, { asOf: '2026-10-16', takeover: '2026-12-01' });
-    check('Cancel-by date = term end minus notice days (11/5/2026 - 90 = 8/7/2026)', E.iso(m.contracts[0].noticeBy), '2026-08-07');
+    check('Cancel-by date = term end minus notice days (11/05/2026 - 90 days = 08/07/2026)', E.nice(m.contracts[0].noticeBy), '08/07/2026');
     check('As-of date drives the math, not the computer clock', m.meta.daysToTakeover, 46);
     var bad = E.analyze({ 'A1 Rent Roll': [{ Property: 'P' }], 'A2 Transition Checklist': [], 'A3 Vendor Contracts': [] }, { asOf: '2026-10-16', takeover: '2026-12-01' });
     check('A missing column produces a clear error, not a blank screen', bad.meta.errors.length > 0, true);

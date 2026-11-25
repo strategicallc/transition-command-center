@@ -15,7 +15,7 @@ if (model.meta.errors.length) { console.error('Load errors:', model.meta.errors)
 
 const results = unitTests(Engine).concat(packTests(model, Engine));
 const fail = results.filter(r => !r.pass);
-const lines = ['# Test results', '', `Run: ${new Date().toISOString()} · Node ${process.version} · workbook: ${path.basename(file)}`, `As-of 2026-10-16, takeover 2026-12-01`, '',
+const lines = ['# Test results', '', `Run: ${(d => [d.getUTCMonth() + 1, d.getUTCDate()].map(n => String(n).padStart(2, '0')).join('/') + '/' + d.getUTCFullYear() + ' ' + d.toISOString().slice(11, 16) + ' UTC')(new Date())} · Node ${process.version} · workbook: ${path.basename(file)}`, `As of 10/16/2026, takeover 12/01/2026`, '',
   `**${results.length - fail.length} of ${results.length} passed.**`, '', '| Group | Check | Expected | Actual | Result |', '|---|---|---|---|---|'];
 results.forEach(r => lines.push(`| ${r.group} | ${r.name} | ${JSON.stringify(r.expected)} | ${JSON.stringify(r.actual)} | ${r.pass ? 'PASS' : '**FAIL**'} |`));
 lines.push('', `Action queue at the README dates: ${model.stats.items.total} items (Critical ${model.stats.items.Critical}, High ${model.stats.items.High}, Medium ${model.stats.items.Medium}).`);

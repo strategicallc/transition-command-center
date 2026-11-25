@@ -2,7 +2,7 @@
 
 A working prototype for **Scenario A, Property Transitions ("Day one without drama")** of the Asset Living build exercise.
 
-**Who it's for:** the Director of Transitions and the incoming regional manager taking over the nine-property Texas portfolio on December 1, 2026.
+**Who it's for:** the Director of Transitions and the incoming regional manager taking over the nine-property Texas portfolio on 12/01/2026.
 
 **What it does:** you load the prior manager's rent roll, the transition checklist and the vendor contracts (the data pack is built in), set the date, and it shows:
 
@@ -36,23 +36,23 @@ tests/run_tests.js    Node test runner
 **Design rule: rules find the problems, and AI only writes the words.**
 - Every flag comes from a plain, deterministic rule in `engine.js`. Each flag carries the tab, row and field values it came from. The same file and date always give the same answer.
 - Claude is used for two things only: drafting an escalation email and drafting the morning brief, from the facts of the flagged items.
-- Every draft passes a **fact check**: each dollar amount, date, contract ID and row number in the text must exist in the source rows, and anything that doesn't is shown in red. In testing, it caught an invented "$5,100" and "Dec 9".
+- Every draft passes a **fact check**: each dollar amount, date, contract ID and row number in the text must exist in the source rows, and anything that doesn't is shown in red. In testing, it caught an invented "$5,100" and "12/09/2026".
 - **The AI never counts.** Counts such as "waiting on the prior manager: 7" are worked out by the rules and handed to the AI, and a count check compares any count in the text against them. This came from a live test where the AI said 8 instead of 7.
 - If AI is unavailable, templates replace it and nothing else changes.
 
 **Built for a tired Monday.** The first screen answers "what do I do first?" Dates and upload sit in a small bar, the timeline folds away, the brief is three lines, and the labels are plain words with the industry term kept beside them ("Last day to cancel," "Vendor insurance (COI)"). IDs stay visible for traceability.
 
-**The date is a setting, not the clock.** The data is dated October 16, 2026. Every deadline is measured from the "As of" date at the top. Move it to 11/2/2026 and the 16 open tasks due 11/1 turn overdue.
+**The date is a setting, not the clock.** The data is dated 10/16/2026. Every deadline is measured from the "As of" date at the top. Move it to 11/02/2026 and the 16 open tasks due 11/01/2026 turn overdue.
 
 ## What it found in the data pack (as of 10/16/2026)
 
-- **6 vendor contracts have already auto-renewed.** Their cancellation windows closed between Aug 7 and Oct 11, and they cost $10,178/month together. The data doesn't say for how long they renewed.
-- **6 contracts end before takeover and don't auto-renew. 3 are life-safety:** Cedar Crossing elevator and Elm Street fire/life safety end Oct 31, and the Mission Trails elevator ends Nov 30.
+- **6 vendor contracts have already auto-renewed.** Their cancellation windows closed between 08/07/2026 and 10/11/2026, and they cost $10,178/month together. The data doesn't say for how long they renewed.
+- **6 contracts end before takeover and don't auto-renew. 3 are life-safety:** Cedar Crossing elevator and Elm Street fire/life safety end 10/31/2026, and the Mission Trails elevator ends 11/30/2026.
 - **Two properties pay two vendors for the same service:** landscaping at Elm Street ($2,900 + $3,100) and pool at Lakeline Vista ($2,900 + $3,100, about 3× the portfolio median). That's $12,000/month across the two pairs.
 - **24 of 49 contracts can't be assigned to a new manager** (21 of them still run past takeover). **3 vendor COIs have already expired.**
 - **The tracker contradicts the other tabs:**
   - Elm Street's vendor review is "Blocked: prior manager hasn't sent contracts," but the vendor tab already lists 7 Elm Street contracts.
-  - Lakeline's insurance and COI task is "Complete," but a Lakeline vendor COI expired June 21.
+  - Lakeline's insurance and COI task is "Complete," but a Lakeline vendor COI expired 06/21/2026.
   - Stonegate's ledger migration is "Complete" before its final rent roll was received or its deposit account opened.
 - **53 of 90 critical-path tasks haven't started** six weeks out. 4 tasks are blocked (3 waiting on the prior manager), 4 have no owner, and 24 haven't been updated in over a week. K. Brooks owns 14 open critical tasks, the most of anyone.
 - **Rent rolls arrived for only 3 of 9 properties, and each was exported in a different format.** In those three:

@@ -1,6 +1,6 @@
 # Build log
 
-Times are Arizona time on Wednesday, November 25, 2026. Brief and data pack received that morning; Hannah Benson (Agilyti) asked for the build within 5 days.
+Times are Arizona time on Wednesday, 11/25/2026. Brief and data pack received that morning; Hannah Benson (Agilyti) asked for the build within 5 days.
 
 | Time | What happened | Decision / why |
 |---|---|---|
@@ -12,11 +12,11 @@ Times are Arizona time on Wednesday, November 25, 2026. Brief and data pack rece
 | 07:39 | Tuned rules after reading every flagged item by hand. | The welcome-letter "dependency" conflicts are softer than ledger migration, so they're Medium, not High. Non-assignable contracts route to the vendor (new agreement), not the prior manager. |
 | 07:41 | Built the interface: runway chart, action queue, detail with source rows, vendors, rent roll, properties, self-test, how-it-works. | "Act now" = every critical item plus high items due within 21 days, so Monday morning is 20 items, not 109. |
 | 07:44 | Render-tested in headless Chrome (desktop and phone). | **Defects:** runway lane labels collided with the as-of marker → moved labels to a left gutter; dates wrapped in tables → no-wrap; vague vendor decision labels ("Terminate / re-sign") → explicit decisions. |
-| 07:46 | Time-travel test: as-of 11/2 → 16 overdue (the 18 tasks due 11/1 minus 2 complete). As-of 12/1 → 100 overdue. | Confirms the date drives every rule. |
+| 07:46 | Time-travel test: as-of 11/02/2026 → 16 overdue (the 18 tasks due 11/01/2026 minus 2 complete). As-of 12/01/2026 → 100 overdue. | Confirms the date drives every rule. |
 | 07:48 | Published as a Claude artifact and turned on "Use Claude" for drafting. Library loads from cdnjs with a bundled offline copy as fallback. | |
 | 07:49 | Tested AI drafting live in Claude. | **Defect found:** the AI morning brief listed Asset staff (M. Odom, S. Alvarez, L. Ford) under "Prior manager," because the data field was named "owner." Fix: renamed fields (`asset_living_staff_owner`, `party_that_must_act`) and added an explicit rule. Re-tested live: fixed. |
 | 07:50 | **Defect found:** the detail panel's bottom (the draft box) was unreachable inside Claude's viewer, which sizes the frame to the page. Fix: removed the sticky panel and scroll it into view on selection. | |
-| 07:51 | Tested the AI failure paths with a simulated model. (1) A draft containing an invented "$5,100" and "Dec 9": the fact check flagged both. (2) No AI available: the template appears and everything else works. | |
+| 07:51 | Tested the AI failure paths with a simulated model. (1) A draft containing an invented "$5,100" and "12/09/2026": the fact check flagged both. (2) No AI available: the template appears and everything else works. | |
 | 07:53 | README, build log, test results, demo and panel prep. | |
 | 08:10 | Created the public GitHub repo and turned on GitHub Pages for a no-login link. | Public because the data is synthetic and reviewers shouldn't need accounts over a holiday weekend. |
 | 08:36 | **Usability test: "someone having a bad morning before coffee."** The honest answer was no. The first action wasn't the first thing on screen, 14 of the 20 urgent items were two tasks repeated, the loudest button (upload) was the wrong one, and the labels used jargon. | Decided to fix it before recording the video. |
@@ -28,6 +28,7 @@ Times are Arizona time on Wednesday, November 25, 2026. Brief and data pack rece
 | 09:37 | Considered putting live AI on the public page. | **Didn't.** It would mean an API key behind a public endpoint, plus cost and abuse risk. Logged as a "with another week" item (pre-generated, labeled drafts) and as a production design (server-side, behind sign-in). |
 | 09:41 | **Second AI defect found in a live test:** the AI brief said "Prior manager (8 items)"; the rules say 7. The fact check missed it because it didn't check counts. | Fix: the rules now compute the counts and hand them to the AI with "never count items yourself," and a new count check compares any "Prior manager (N)" against the rules. Re-tested live: "Prior manager 7, Owner 1, Vendor 0, Asset team 12," check passes. |
 | 09:50 | Wrote `HANDOFF.md` for IT. | |
+| 10:05 | Switched every date people read to MM/DD/YYYY (app, emails, AI prompts, CSV exports, documents). Checked first whether Yardi wants YYYY-MM-DD for imports: a Yardi import guide says it typically requires MM/DD/YYYY, and Asset Living's own import template controls the final format. | Added "confirm the date format against Asset Living's Yardi import template" to the IT handoff. Fixed the timeline so the longer labels don't overlap. |
 
 ## Where AI helped and where it got in the way
 

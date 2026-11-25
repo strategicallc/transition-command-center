@@ -1,16 +1,16 @@
 # Test results
 
-Run: 2026-11-25T16:32:57.329Z · Node v22.23.5 · workbook: Asset_Living_Build_Exercise_Data_Pack.xlsx
-As-of 2026-10-16, takeover 2026-12-01
+Run: 11/25/2026 17:10 UTC · Node v22.23.5 · workbook: Asset_Living_Build_Exercise_Data_Pack.xlsx
+As of 10/16/2026, takeover 12/01/2026
 
 **60 of 60 passed.**
 
 | Group | Check | Expected | Actual | Result |
 |---|---|---|---|---|
-| Parsing & date math | Reads MM/DD/YYYY text ("03/14/2025") | "2025-03-14" | "2025-03-14" | PASS |
-| Parsing & date math | Reads YYYY-MM-DD text ("2026-04-06") | "2026-04-06" | "2026-04-06" | PASS |
-| Parsing & date math | Reads "2026-04-19 00:00:00" | "2026-04-19" | "2026-04-19" | PASS |
-| Parsing & date math | Reads a real Excel date (serial 46113) | "2026-04-01" | "2026-04-01" | PASS |
+| Parsing & date math | Reads MM/DD/YYYY text ("03/14/2025") | "03/14/2025" | "03/14/2025" | PASS |
+| Parsing & date math | Reads YYYY-MM-DD text ("2026-04-06") and shows it as MM/DD/YYYY | "04/06/2026" | "04/06/2026" | PASS |
+| Parsing & date math | Reads "2026-04-19 00:00:00" | "04/19/2026" | "04/19/2026" | PASS |
+| Parsing & date math | Reads a real Excel date (serial 46113) | "04/01/2026" | "04/01/2026" | PASS |
 | Parsing & date math | Rejects an impossible date ("13/45/2026") | "unparsed" | "unparsed" | PASS |
 | Parsing & date math | Blank date stays blank, not zero | null | null | PASS |
 | Parsing & date math | Reads "$1,334.00" as 1334 | 1334 | 1334 | PASS |
@@ -20,7 +20,7 @@ As-of 2026-10-16, takeover 2026-12-01
 | Parsing & date math | Maps "Vacant - Not Ready" to Vacant – Not Ready | "Vacant – Not Ready" | "Vacant – Not Ready" | PASS |
 | Parsing & date math | Unknown status is not guessed ("XYZ") | null | null | PASS |
 | Parsing & date math | Matches "Apt 3203" and "#3203" to one unit key | ["3203","3203"] | ["3203","3203"] | PASS |
-| Parsing & date math | Cancel-by date = term end minus notice days (11/5/2026 - 90 = 8/7/2026) | "2026-08-07" | "2026-08-07" | PASS |
+| Parsing & date math | Cancel-by date = term end minus notice days (11/05/2026 - 90 days = 08/07/2026) | "08/07/2026" | "08/07/2026" | PASS |
 | Parsing & date math | As-of date drives the math, not the computer clock | 46 | 46 | PASS |
 | Parsing & date math | A missing column produces a clear error, not a blank screen | true | true | PASS |
 | Parsing & date math | A file without the A1/A2/A3 tabs is refused with a message | 3 | 3 | PASS |
@@ -70,6 +70,33 @@ As-of 2026-10-16, takeover 2026-12-01
 
 Action queue at the README dates: 109 items (Critical 8, High 61, Medium 40).
 
+## AI path tests (headless Chrome with a simulated model, tools/ai_mock_test.py)
+
+```
+mock | FLAG: AI draft. Claude wrote the wording from the facts shown on this page only. Check it against the source rows, fill every 
+mock | CHECK: Fact check: 2 of 5 amounts, dates or IDs in this draft are not in the source rows: $5,100, 12/09/2026. Fix or remove them before sending.
+prompt has staff-owner rule: True | prompt length 2275
+brief note: AI-written from the queue’s facts. Fact check: not in the data: $4,746, $5,100, 12/09/2026, VC-5002.
+mock errors: none
+none | FLAG: AI drafting runs only inside Claude. This is the template version, built from the same source rows; every finding above 
+none | CHECK: Fact check: all 8 amounts, dates and IDs in this draft match the source rows. Fill in each [CONFIRM] before sending.
+none errors: none
+```
+
+## Monday-view interaction test (tools/monday_test.py)
+
+```
+start cards: C-VC-5009, C-VC-5028, T-77
+after handling C-VC-5009 -> cards: C-VC-5028, T-77, T-86
+tile: 19 | queue: 19 items, shown as 10 lines (same task and same reason grouped)
+draft opened for: Fire/Life Safety contract ends 10/31/2026, no coverage on day one | draft starts: Subject: Elm Street Lofts takeover (12/01/2026): SafeGuard F
+check: Fact check: all 7 amounts, dates and IDs in this draft match the source rows. Fill in each [CONFIRM] before sending.
+group 1 open rows: 2
+with handled shown: 20 items, shown as 10 lines (same task and same reason grouped)
+after undo cards: C-VC-5009, C-VC-5028, T-77
+errors: none
+```
+
 ## Count check (checkCounts in app/app.js)
 
 | Text | Flags expected | Flags found | Result |
@@ -78,4 +105,4 @@ Action queue at the README dates: 109 items (Critical 8, High 61, Medium 40).
 | Waiting on others: 7 with the prior manager, 1 with the owner. | 0 | 0 | PASS |
 | Waiting on: Prior manager 7, Owner 1, Vendor 0, Asset team 12. | 0 | 0 | PASS |
 
-Live check in Claude after the fix: AI brief read "Prior manager 7, Owner 1, Vendor 0, Asset team 12"; fact check passed.
+Live checks in Claude (11/25/2026): AI morning brief and email drafts generated; staff-name misattribution found and fixed; AI miscount (8 vs 7) found and fixed with rule-supplied counts and the count check; Start here Draft email produced an AI draft and kept the Act now view.
