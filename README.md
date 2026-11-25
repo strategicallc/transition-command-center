@@ -6,11 +6,12 @@ A working prototype for **Scenario A, Property Transitions ("Day one without dra
 
 **What it does:** you load the prior manager's rent roll, the transition checklist and the vendor contracts (the data pack is built in), set the date, and it shows:
 
-1. **Today:** one ranked action queue. It covers what needs attention, why, who has to act, the deadline, and the exact source rows behind each flag. Each item has a review status and notes, plus an escalation email you can draft with AI or from a template.
-2. **Vendors:** a decision for all 49 contracts (keep, replace or re-sign, locked in, new agreement, hold for COI, cancel duplicate) with the calculated cancel-by date.
-3. **Rent roll:** intake checks on the prior manager's export. The status codes, dates, money formats and unit IDs are standardized beside the originals. The output is a "needs a human" queue and a clean CSV.
-4. **Properties:** a red, amber or green readiness light per property, who carries the critical path, and a list of what the data can't show yet.
-5. **Self-test:** 54 checks that run in the page. They cover the parsing rules and every headline count, compared against an answer key counted separately in Python.
+1. **Start here:** the three open critical items with the earliest deadlines. Each card says what the problem is, who has to act and by when, with one-click **Draft email** and **Mark handled** buttons.
+2. **Today:** one ranked action queue. "Act now" shows 20 items as 10 lines, because items with the same task, the same main reason and the same severity fold into one line. An unowned or blocked task never hides inside a "not started" group. Every item still opens on its own with why it was flagged, the exact source rows, an escalation email (drafted with AI or from a template) and a review note.
+3. **Vendors:** a decision for all 49 contracts (keep, replace or re-sign, locked in, new agreement, hold for COI, cancel duplicate) with the calculated last day to cancel.
+4. **Rent roll:** intake checks on the prior manager's export. The status codes, dates, money formats and unit IDs are standardized beside the originals. The output is a "needs a human" queue and a clean CSV.
+5. **Properties:** a red, amber or green readiness light per property, who carries the critical path, and a list of what the data can't show yet.
+6. **Self-test:** 60 checks that run in the page. They cover the parsing rules, every headline count, and the Monday-view grouping, each compared against an answer key worked out separately.
 
 ## Run it
 
@@ -37,6 +38,8 @@ tests/run_tests.js    Node test runner
 - Claude is used for two things only: drafting an escalation email and drafting the morning brief, from the facts of the flagged items.
 - Every draft passes a **fact check**: each dollar amount, date, contract ID and row number in the text must exist in the source rows, and anything that doesn't is shown in red. In testing, it caught an invented "$5,100" and "Dec 9".
 - If AI is unavailable, templates replace it and nothing else changes.
+
+**Built for a tired Monday.** The first screen answers "what do I do first?" Dates and upload sit in a small bar, the timeline folds away, the brief is three lines, and the labels are plain words with the industry term kept beside them ("Last day to cancel," "Vendor insurance (COI)"). IDs stay visible for traceability.
 
 **The date is a setting, not the clock.** The data is dated October 16, 2026. Every deadline is measured from the "As of" date at the top. Move it to 11/2/2026 and the 16 open tasks due 11/1 turn overdue.
 

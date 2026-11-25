@@ -18,6 +18,11 @@ Times are Arizona time on Wednesday, November 25, 2026. Brief and data pack rece
 | 07:50 | **Defect found:** the detail panel's bottom (the draft box) was unreachable inside Claude's viewer, which sizes the frame to the page. Fix: removed the sticky panel and scroll it into view on selection. | |
 | 07:51 | Tested the AI failure paths with a simulated model. (1) A draft containing an invented "$5,100" and "Dec 9": the fact check flagged both. (2) No AI available: the template appears and everything else works. | |
 | 07:53 | README, build log, test results, demo and panel prep. | |
+| 08:10 | Created the public GitHub repo and turned on GitHub Pages for a no-login link. | Public because the data is synthetic and reviewers shouldn't need accounts over a holiday weekend. |
+| 08:36 | **Usability test: "someone having a bad morning before coffee."** The honest answer was no. The first action wasn't the first thing on screen, 14 of the 20 urgent items were two tasks repeated, the loudest button (upload) was the wrong one, and the labels used jargon. | Decided to fix it before recording the video. |
+| 08:40 | Pressure-tested my own fix before building it. **My first grouping idea (20 → 8 lines) would have hidden an unowned critical task and a blocked one inside a "not started" group.** | Rejected it. Group only same task + same main reason + same severity, which gives 20 → 10 lines. Kept IDs and the industry terms for traceability and credibility. Kept the as-of date visible. |
+| 08:47 | Built the Monday view: Start here (3 cards), grouped list, one-click Draft email / Mark handled, action-first detail, 3-line brief, compact data bar, folded timeline, plain labels. Added 6 self-test checks (60/60). | |
+| 08:50 | **Defects found:** severity tags stretched tall in rows; drafting from Start here switched the list to "Everything" (109 items), which is confusing for the exact user this is for. Both fixed and re-tested live in Claude. | |
 
 ## Where AI helped and where it got in the way
 
@@ -27,4 +32,4 @@ Times are Arizona time on Wednesday, November 25, 2026. Brief and data pack rece
 
 ## Time spent
 
-About 40 minutes from first read to a tested, hosted build. [Add: time for the video, rehearsal and any changes you make.]
+About 40 minutes from first read to a tested, hosted build, plus about 35 minutes for GitHub and the Monday-morning redesign. [Add: time for the video, rehearsal and any changes you make.]

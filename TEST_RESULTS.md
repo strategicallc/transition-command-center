@@ -1,9 +1,9 @@
 # Test results
 
-Run: 2026-11-25T14:53:27.833Z · Node v22.23.5 · workbook: Asset_Living_Build_Exercise_Data_Pack.xlsx
+Run: 2026-11-25T15:52:44.230Z · Node v22.23.5 · workbook: Asset_Living_Build_Exercise_Data_Pack.xlsx
 As-of 2026-10-16, takeover 2026-12-01
 
-**54 of 54 passed.**
+**60 of 60 passed.**
 
 | Group | Check | Expected | Actual | Result |
 |---|---|---|---|---|
@@ -61,6 +61,12 @@ As-of 2026-10-16, takeover 2026-12-01
 | A3 Vendors | Contracts in a duplicate-service pair | 4 | 4 | PASS |
 | A3 Vendors | Monthly cost of the duplicate pairs | 12000 | 12000 | PASS |
 | A3 Vendors | Cost more than 2× the service median | 2 | 2 | PASS |
+| Monday view | "Act now" items | 20 | 20 | PASS |
+| Monday view | Lines after grouping (same task + same reason + same severity only) | 10 | 10 | PASS |
+| Monday view | Bank-account group: not started (unowned Mission and blocked Trinity stay separate) | ["Brazos Landing","Lakeline Vista","Stonegate Commons","The Reserve at Pinehurst","Willow Bend Flats"] | ["Brazos Landing","Lakeline Vista","Stonegate Commons","The Reserve at Pinehurst","Willow Bend Flats"] | PASS |
+| Monday view | Vendor-review group: not started (blocked Elm Street stays separate) | ["Brazos Landing","Cedar Crossing","Lakeline Vista","Mission Trails","Willow Bend Flats"] | ["Brazos Landing","Cedar Crossing","Lakeline Vista","Mission Trails","Willow Bend Flats"] | PASS |
+| Monday view | Life-safety lapse group | ["C-VC-5009","C-VC-5028","C-VC-5031"] | ["C-VC-5009","C-VC-5028","C-VC-5031"] | PASS |
+| Monday view | Start here (top 3 critical, earliest deadline) | ["C-VC-5009","C-VC-5028","T-77"] | ["C-VC-5009","C-VC-5028","T-77"] | PASS |
 
 Action queue at the README dates: 109 items (Critical 8, High 61, Medium 40).
 
@@ -69,12 +75,26 @@ Action queue at the README dates: 109 items (Critical 8, High 61, Medium 40).
 ```
 mock | FLAG: AI draft. Claude wrote the wording from the facts shown on this page only. Check it against the source rows, fill every 
 mock | CHECK: Fact check: 2 of 5 amounts, dates or IDs in this draft are not in the source rows: $5,100, Dec 9. Fix or remove them before sending.
-prompt has staff-owner rule: True | prompt length 2214
-brief note: AI-written from the queue’s facts. Fact check: not in the data: $4,746, $5,100, Dec 9.
+prompt has staff-owner rule: True | prompt length 2218
+brief note: AI-written from the queue’s facts. Fact check: not in the data: $4,746, $5,100, Dec 9, VC-5002.
 mock errors: none
 none | FLAG: AI drafting isn’t available in this view (for example, when the app is opened from a file). Here is the template draft i
 none | CHECK: Fact check: all 8 amounts, dates and IDs in this draft match the source rows. Fill in each [CONFIRM] before sending.
 none errors: none
 ```
 
-Live check in Claude (Nov 25, 2026): AI morning brief and VC-5002 email draft generated; staff-name misattribution found and fixed (see BUILD_LOG.md).
+## Monday-view interaction test (tools/monday_test.py)
+
+```
+start cards: C-VC-5009, C-VC-5028, T-77
+after handling C-VC-5009 -> cards: C-VC-5028, T-77, T-86
+tile: 19 | queue: 19 items, shown as 10 lines (same task and same reason grouped)
+draft opened for: Fire/Life Safety contract ends Oct 31, no coverage on day one | draft starts: Subject: Elm Street Lofts takeover (Dec 1, 2026): SafeGuard 
+check: Fact check: all 7 amounts, dates and IDs in this draft match the source rows. Fill in each [CONFIRM] before sending.
+group 1 open rows: 2
+with handled shown: 20 items, shown as 10 lines (same task and same reason grouped)
+after undo cards: C-VC-5009, C-VC-5028, T-77
+errors: none
+```
+
+Live checks in Claude (Nov 25, 2026): AI morning brief and email drafts generated; staff-name misattribution found and fixed; Start here "Draft email" produced an AI draft and kept the Act now view after the fix (see BUILD_LOG.md).

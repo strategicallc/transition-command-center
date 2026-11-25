@@ -12,7 +12,7 @@ async def main():
             errs=[]; pg.on('pageerror', lambda e: errs.append(str(e)))
             if mode=='mock': await pg.add_init_script(MOCK)
             await pg.goto('file://'+sys.argv[1]+'#today'); await pg.wait_for_timeout(1200)
-            await pg.click("text=Everything"); await pg.fill('#fQ','VC-5002'); await pg.wait_for_timeout(300)
+            await pg.click("text=Everything"); await pg.click('details.filters > summary'); await pg.fill('#fQ','VC-5002'); await pg.wait_for_timeout(300)
             await pg.click('.item'); await pg.click('#draftAI'); await pg.wait_for_timeout(800)
             print(mode, '| FLAG:', (await pg.inner_text('#draftFlag'))[:120].replace('\n',' '))
             print(mode, '| CHECK:', await pg.inner_text('#draftCheck'))

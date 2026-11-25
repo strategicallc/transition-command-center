@@ -13,7 +13,7 @@ wb.SheetNames.forEach(n => { sheets[n] = XLSX.utils.sheet_to_json(wb.Sheets[n], 
 const model = Engine.analyze(sheets, { asOf: '2026-10-16', takeover: '2026-12-01' });
 if (model.meta.errors.length) { console.error('Load errors:', model.meta.errors); process.exit(1); }
 
-const results = unitTests(Engine).concat(packTests(model));
+const results = unitTests(Engine).concat(packTests(model, Engine));
 const fail = results.filter(r => !r.pass);
 const lines = ['# Test results', '', `Run: ${new Date().toISOString()} · Node ${process.version} · workbook: ${path.basename(file)}`, `As-of 2026-10-16, takeover 2026-12-01`, '',
   `**${results.length - fail.length} of ${results.length} passed.**`, '', '| Group | Check | Expected | Actual | Result |', '|---|---|---|---|---|'];

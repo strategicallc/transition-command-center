@@ -36,6 +36,32 @@ h1{font-size:clamp(26px,3.4vw,38px);line-height:1.05;margin:0;font-weight:600;le
 .srcline{font-size:13px;color:var(--mute);margin-top:10px;display:flex;flex-wrap:wrap;gap:6px 14px}
 .srcline b{color:var(--ink);font-weight:500}
 .err{background:var(--critbg);border:1px solid #f3b4ac;color:var(--crit);border-radius:8px;padding:12px 14px;margin-top:12px}
+.databar{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;margin-top:12px;font-size:13px;color:var(--mute)}
+.mini{display:inline-flex;gap:6px;align-items:center}
+.mini input{height:36px;padding:0 8px;border:1px solid #b9bdc4;border-radius:8px;background:#fff;font-size:15px;color:var(--ink)}
+.databar .srcline{margin:0}
+.start{margin-top:16px}
+.start h2{font-size:20px;margin:0 0 8px}
+.startcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}
+.scard{background:#fff;border:1px solid var(--line);border-left:5px solid var(--crit);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.scard .hd{font-size:17px;font-weight:600;line-height:1.3}
+.scard .mt{font-size:13px;color:var(--mute)}
+.scard .row{margin-top:auto}
+.done-msg{background:var(--okbg);color:var(--ok);border-radius:12px;padding:14px}
+details.runway-box>summary{cursor:pointer;font-weight:600;font-size:15px;padding:4px 0}
+details.filters{margin:-4px 0 12px}details.filters>summary{cursor:pointer;font-size:14px;color:var(--mute)}
+.qrow{display:flex;align-items:stretch;border-bottom:1px solid var(--line);background:#fff;border-left:4px solid transparent}
+.qrow[aria-current=true]{background:#fff7f2;border-left-color:var(--or)}
+.qrow .item{border:0;border-left:0;flex:1}
+.qrow .acts{display:flex;align-items:center;padding:0 10px;gap:6px}
+.hbtn{height:36px;padding:0 10px;border-radius:8px;border:1px solid #b9bdc4;background:#fff;font-size:13px;white-space:nowrap}
+.hbtn.on{background:var(--okbg);border-color:#9fd3b0;color:var(--ok)}
+.grp>summary{list-style:none;cursor:pointer;padding:10px 12px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:4px 10px;background:#fff}
+.grp>summary::-webkit-details-marker{display:none}
+.grp>summary .t{font-weight:500}.grp>summary .m{grid-column:2/4;font-size:13px;color:var(--mute)}
+.grp>summary .t::before{content:"\25B8 ";color:var(--mute)}.grp[open]>summary .t::before{content:"\25BE "}
+.grp .qrow{padding-left:18px;background:#fcfcfd}
+.idtag{font-size:11px;color:#8a9099}
 .runway-box{background:#fff;border:1px solid var(--line);border-radius:12px;margin-top:16px;padding:10px 12px 4px}
 .runway-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;align-items:baseline}
 .runway-head h2{font-size:15px;margin:0;font-weight:600}
@@ -71,7 +97,7 @@ select,input[type=search]{height:40px;border:1px solid #b9bdc4;border-radius:8px
 .item .t{font-weight:500}
 .item .m{grid-column:2/4;font-size:13px;color:var(--mute)}
 .item .d{font-size:13px;white-space:nowrap;text-align:right}
-.pill{display:inline-block;font-size:12px;font-weight:600;padding:1px 8px;border-radius:10px;white-space:nowrap;line-height:20px}
+.pill{align-self:start;display:inline-block;font-size:12px;font-weight:600;padding:1px 8px;border-radius:10px;white-space:nowrap;line-height:20px}
 .pill.Critical{background:var(--critbg);color:var(--crit)}.pill.High{background:var(--highbg);color:var(--high)}.pill.Medium{background:var(--medbg);color:var(--med)}
 .pill.ok{background:var(--okbg);color:var(--ok)}
 .late{color:var(--crit);font-weight:600}
@@ -126,29 +152,28 @@ footer{color:var(--mute);font-size:13px;border-top:1px solid var(--line)}
 <body>
 <header class="band">
   <div class="wrap">
-    <div class="top">
-      <div>
-        <h1>Transition Command Center</h1>
-        <p class="sub">Nine-property Texas takeover · for the Director of Transitions and the incoming regional manager</p>
-      </div>
-      <div class="controls">
-        <label class="ctl">As of<input type="date" id="asOf" value="2026-10-16"></label>
-        <label class="ctl">Takeover<input type="date" id="takeover" value="2026-12-01"></label>
-        <button class="btn ghost" id="usePack" type="button">Use data pack</button>
-        <label class="btn" for="file" style="display:inline-flex;align-items:center" tabindex="0" id="fileLbl">Upload export</label>
-        <input type="file" id="file" accept=".xlsx,.xls" class="sr">
-      </div>
+    <h1>Transition Command Center</h1>
+    <p class="sub">Nine-property Texas takeover · for the Director of Transitions and the incoming regional manager</p>
+    <div class="databar" id="databar">
+      <label class="mini">As of <input type="date" id="asOf" value="2026-10-16"></label>
+      <label class="mini">Takeover <input type="date" id="takeover" value="2026-12-01"></label>
+      <span class="srcline" id="srcline">Loading…</span>
+      <span class="row"><button class="btn small ghost" id="usePack" type="button">Use data pack</button>
+      <label class="btn small ghost" for="file" style="display:inline-flex;align-items:center" tabindex="0" id="fileLbl">Upload new export</label></span>
+      <input type="file" id="file" accept=".xlsx,.xls" class="sr">
     </div>
-    <div class="srcline" id="srcline">Loading…</div>
     <div id="errors"></div>
-    <div class="runway-box">
-      <div class="runway-head">
-        <h2 id="runwayTitle">Runway to takeover</h2>
-        <div class="legend"><span><span class="dot" style="background:var(--crit)"></span>Critical</span><span><span class="dot" style="background:#d97706"></span>High</span><span><span class="dot" style="background:#98a2b3"></span>Medium / no issue</span><span><span class="dot" style="background:var(--or)"></span>As of</span></div>
-      </div>
-      <div class="fig" id="runwayFig"><svg id="runway" role="img" aria-label="Timeline of deadlines between the as-of date and takeover"></svg></div>
-    </div>
+    <section class="start" id="start" aria-labelledby="startH">
+      <h2 id="startH">Start here</h2>
+      <div class="startcards" id="startCards"></div>
+      <p class="note" id="startNote"></p>
+    </section>
     <div class="tiles" id="tiles"></div>
+    <details class="runway-box" id="runwayBox">
+      <summary><span id="runwayTitle">Timeline to takeover</span> <span class="note">(open to see every deadline on one line)</span></summary>
+      <div class="legend"><span><span class="dot" style="background:var(--crit)"></span>Critical</span><span><span class="dot" style="background:#d97706"></span>High</span><span><span class="dot" style="background:#98a2b3"></span>Lower priority</span><span><span class="dot" style="background:var(--or)"></span>As of</span></div>
+      <div class="fig" id="runwayFig"><svg id="runway" role="img" aria-label="Timeline of deadlines between the as-of date and takeover"></svg></div>
+    </details>
   </div>
 </header>
 <nav class="tabs" aria-label="Views"><div class="wrap" role="tablist" id="tabs">
@@ -163,7 +188,7 @@ footer{color:var(--mute);font-size:13px;border-top:1px solid var(--line)}
   <section class="band panel" id="p-today"><div class="wrap">
     <div class="brief" id="briefBox">
       <div class="row" style="justify-content:space-between"><strong>Morning brief</strong>
-        <div class="row"><button class="btn small" id="briefAI" type="button">Write brief with AI</button><button class="btn small ghost" id="briefCopy" type="button">Copy</button></div></div>
+        <div class="row"><button class="btn small ghost" id="briefAI" type="button">Rewrite with AI</button><button class="btn small ghost" id="briefCopy" type="button">Copy</button></div></div>
       <pre id="briefText"></pre>
       <div class="note" id="briefNote"></div>
     </div>
@@ -173,12 +198,16 @@ footer{color:var(--mute);font-size:13px;border-top:1px solid var(--line)}
         <button type="button" data-v="hi" aria-pressed="false">All critical &amp; high</button>
         <button type="button" data-v="all" aria-pressed="false">Everything</button>
       </div>
+      <span class="note" id="queueCount"></span>
+    </div>
+    <details class="filters"><summary>More filters</summary>
+      <div class="bar" style="margin-top:8px">
       <select id="fActor" aria-label="Who has to act"><option value="">Anyone acts</option><option>Asset team</option><option>Prior manager</option><option>Owner</option><option>Vendor</option></select>
       <select id="fProp" aria-label="Property"><option value="">All properties</option></select>
-      <select id="fReview" aria-label="Review status"><option value="">Any review status</option><option>Open</option><option>In review</option><option>Resolved</option><option>Dismissed</option></select>
+      <select id="fReview" aria-label="Review status"><option value="">Open items only</option><option value="*">Any review status</option><option>In review</option><option>Resolved</option><option>Dismissed</option></select>
       <input type="search" id="fQ" placeholder="Search" aria-label="Search the queue">
       <button class="btn small ghost" id="copyQueue" type="button">Copy queue (CSV)</button>
-    </div>
+      </div></details>
     <div class="split">
       <div class="list" id="queue"></div>
       <div class="detail" id="detail"><p class="note">Pick an item to see why it was flagged, the source rows, and a draft email.</p></div>
@@ -191,7 +220,7 @@ footer{color:var(--mute);font-size:13px;border-top:1px solid var(--line)}
       <select id="vDec" aria-label="Decision"><option value="">All decisions</option></select>
       <button class="btn small ghost" id="copyVend" type="button">Copy table (CSV)</button></div>
     <div class="scroll"><table class="grid stack" id="vendTable"></table></div>
-    <p class="note">Cancel-by = current term end minus the termination notice days. Until takeover, the prior manager or the owner is the party to these contracts, so they must send any notice. Recommendations are operational, not legal advice; contract language governs.</p>
+    <p class="note">Last day to cancel = current term end minus the termination notice days. Until takeover, the prior manager or the owner is the party to these contracts, so they must send any notice. Recommendations are operational, not legal advice; contract language governs.</p>
   </div></section>
 
   <section class="band panel" id="p-rent" hidden><div class="wrap">

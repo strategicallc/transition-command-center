@@ -74,14 +74,29 @@
     ['A3 Vendors', 'Cost more than 2× the service median', function (s) { return s.COST_OUTLIER; }, 2]
   ];
 
-  function packTests(model) {
+  function packTests(model, E) {
     var s = model.stats;
-    return EXPECT.map(function (e) { var a = e[2](s); return { group: e[0], name: e[1], expected: e[3], actual: a, pass: eq(a, e[3]) }; });
+    var out = EXPECT.map(function (e) { var a = e[2](s); return { group: e[0], name: e[1], expected: e[3], actual: a, pass: eq(a, e[3]) }; });
+    if (E && E.groupItems) {
+      var now = model.items.filter(function (i) { return E.actNow(i, model.meta.asOf); });
+      var lines = E.groupItems(now);
+      function members(re) { var g = lines.filter(function (l) { return l.group && re.test(l.title || '') && l.code === 'NOT_STARTED_SOON'; })[0]; return g ? g.items.map(function (i) { return i.property; }).sort() : null; }
+      var checks = [
+        ['Monday view', '"Act now" items', now.length, 20],
+        ['Monday view', 'Lines after grouping (same task + same reason + same severity only)', lines.length, 10],
+        ['Monday view', 'Bank-account group: not started (unowned Mission and blocked Trinity stay separate)', members(/bank accounts/i), ['Brazos Landing', 'Lakeline Vista', 'Stonegate Commons', 'The Reserve at Pinehurst', 'Willow Bend Flats']],
+        ['Monday view', 'Vendor-review group: not started (blocked Elm Street stays separate)', members(/vendor contracts/i), ['Brazos Landing', 'Cedar Crossing', 'Lakeline Vista', 'Mission Trails', 'Willow Bend Flats']],
+        ['Monday view', 'Life-safety lapse group', (lines.filter(function (l) { return l.group && l.code === 'LAPSES_BEFORE_TAKEOVER'; })[0] || { items: [] }).items.map(function (i) { return i.id; }).sort(), ['C-VC-5009', 'C-VC-5028', 'C-VC-5031']],
+        ['Monday view', 'Start here (top 3 critical, earliest deadline)', E.startHere(model.items, function () { return true; }, 3).map(function (i) { return i.id; }), ['C-VC-5009', 'C-VC-5028', 'T-77']]
+      ];
+      checks.forEach(function (c) { out.push({ group: c[0], name: c[1], expected: c[3], actual: c[2], pass: eq(c[2], c[3]) }); });
+    }
+    return out;
   }
 
   function runSelfTest(E, model) {
     var out = unitTests(E), packApplies = model && model.meta && model.meta.isDataPack && E.iso(model.meta.asOf) === '2026-10-16' && E.iso(model.meta.takeover) === '2026-12-01';
-    if (packApplies) out = out.concat(packTests(model));
+    if (packApplies) out = out.concat(packTests(model, E));
     return { results: out, packApplies: !!packApplies };
   }
 

@@ -218,7 +218,7 @@
           : codes.indexOf('NOTICE_DUE_SOON') >= 0 ? c.noticeBy : T;
         addItem({ id: 'C-' + c.id, kind: 'Vendor contract', property: c.property, title: c.vendor + ' — ' + c.service + ' (' + c.id + ')',
           reasons: f, action: rec, emailTo: to, assignee: reviewer ? reviewer.owner : '', deadline: dl,
-          evidence: [{ tab: m3.tab, row: c.row, id: c.id, fields: { Vendor: c.vendor, Service: c.service, 'Monthly Cost': money$(c.monthly), 'Current Term End': iso(c.termEnd), 'Auto-Renew': c.autoRenew, 'Notice (days)': c.noticeDays, 'Cancel-by date (calculated)': iso(c.noticeBy), 'COI Expiration': iso(c.coi), 'Assignable': c.assignable } }] });
+          evidence: [{ tab: m3.tab, row: c.row, id: c.id, fields: { Vendor: c.vendor, Service: c.service, 'Monthly Cost': money$(c.monthly), 'Current Term End': iso(c.termEnd), 'Auto-Renew': c.autoRenew, 'Notice (days)': c.noticeDays, 'Last day to cancel (calculated)': iso(c.noticeBy), 'COI Expiration': iso(c.coi), 'Assignable': c.assignable } }] });
       }
     });
 
@@ -391,6 +391,30 @@
     return model;
   }
 
-  var Engine = { analyze: analyze, parseDate: parseDate, parseMoney: parseMoney, normStatus: normStatus, unitKey: unitKey, iso: iso, nice: nice, parseISOInput: parseISOInput, money: money$, SEV: SEV };
+  // ---------- Monday-morning view helpers (display only; they never change a finding) ----------
+  function primaryReason(it) { return it.reasons.slice().sort(function (a, b) { return SEV[b.sev] - SEV[a.sev]; })[0]; }
+  /* "Act now" = every critical item, plus high items whose deadline is within 21 days of the as-of date. */
+  function actNow(it, asOf) { return it.severity === 'Critical' || (it.severity === 'High' && it.deadline != null && it.deadline - asOf <= 21); }
+  /* Group only items that share the same kind, the same task (for checklist items), the same main reason AND the same severity.
+     An unowned or blocked task never hides inside a "not started" group. */
+  function groupItems(items) {
+    var out = [], idx = {};
+    items.forEach(function (it) {
+      var p = primaryReason(it);
+      var groupable = it.kind === 'Transition task' || it.kind === 'Vendor contract' || (it.kind === 'Rent roll' && it.id.indexOf('U-') === 0);
+      var key = groupable ? [it.kind, it.kind === 'Transition task' ? it.title : '', p.code, it.severity].join('|') : null;
+      if (key && idx[key] != null) out[idx[key]].items.push(it);
+      else { if (key) idx[key] = out.length; out.push({ key: key || it.id, items: [it] }); }
+    });
+    return out.map(function (g) {
+      if (g.items.length === 1) return { group: false, item: g.items[0] };
+      var dl = g.items.map(function (i) { return i.deadline; }).filter(function (d) { return d != null; });
+      return { group: true, key: g.key, items: g.items, severity: g.items[0].severity, kind: g.items[0].kind, title: g.items[0].title, code: primaryReason(g.items[0]).code, deadline: dl.length ? Math.min.apply(null, dl) : null };
+    });
+  }
+  /* "Start here" = the first n open critical items in queue order (critical first, earliest deadline first). */
+  function startHere(items, isOpen, n) { return items.filter(function (i) { return i.severity === 'Critical' && isOpen(i); }).slice(0, n || 3); }
+
+  var Engine = { analyze: analyze, primaryReason: primaryReason, actNow: actNow, groupItems: groupItems, startHere: startHere, parseDate: parseDate, parseMoney: parseMoney, normStatus: normStatus, unitKey: unitKey, iso: iso, nice: nice, parseISOInput: parseISOInput, money: money$, SEV: SEV };
   if (typeof module !== 'undefined' && module.exports) module.exports = Engine; else root.Engine = Engine;
 })(this);
