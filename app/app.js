@@ -322,7 +322,7 @@
     const ta = $('#draft'), flag = $('#draftFlag');
     flag.innerHTML = '<div class="note">Asking Claude…</div>';
     const sample = await getSample();
-    if (!sample) { ta.value = templateEmail(i); flag.innerHTML = '<div class="aiflag">AI drafting isn’t available in this view (for example, when the app is opened from a file). Here is the template draft instead; every finding above still works without AI.</div>'; showCheck(i); return; }
+    if (!sample) { ta.value = templateEmail(i); flag.innerHTML = '<div class="aiflag">AI drafting runs only inside Claude. This is the template version, built from the same source rows; every finding above works the same without AI.</div>'; showCheck(i); return; }
     if (aiCtl) aiCtl.abort(); aiCtl = new AbortController();
     const prompt = 'You draft escalation emails for the Director of Transitions at Asset Living, a third-party property manager taking over a nine-property Texas portfolio from another manager.\n' +
       'Write ONE email to ' + recipientLabel(i) + '.\nRules:\n- Use ONLY the facts in the JSON below. Do not invent names, email addresses, phone numbers, dollar amounts, dates, contract terms or commitments.\n' +
@@ -384,7 +384,7 @@
   function renderBrief() { if (!state.briefAI) { $('#briefText').textContent = briefTemplate(); $('#briefNote').textContent = 'Three lines, built by rules from the open items.'; } }
   $('#briefAI').onclick = async () => {
     const sample = await getSample(), note = $('#briefNote');
-    if (!sample) { note.textContent = 'AI isn’t available in this view, so the rules-based brief above is shown.'; return; }
+    if (!sample) { note.textContent = 'AI rewriting runs only inside Claude; the rules-based brief above is the full brief.'; return; }
     const m = state.model, now = m.items.filter(i => actNow(i) && isOpen(i)).slice(0, 25).map(i => ({ severity: i.severity, property: i.property, item: headline(i), party_that_must_act: i.emailTo, asset_living_staff_owner: i.assignee || null, deadline: i.deadline != null ? E.iso(i.deadline) : null, why: i.reasons[0].text }));
     const facts = { as_of: E.iso(A()), takeover: E.iso(T()), days_to_takeover: m.meta.daysToTakeover, act_now_count: m.items.filter(i => actNow(i) && isOpen(i)).length, contracts_auto_renewed: m.stats.CANCEL_WINDOW_MISSED, auto_renewed_monthly: m.stats.lockedMonthly, rent_rolls_received: m.stats.rentRollProperties, properties_in_portfolio: m.stats.rentRollProperties + m.stats.missingRentRolls, items: now };
     note.textContent = 'Asking Claude…';
@@ -535,6 +535,8 @@
   $('#file').addEventListener('change', e => { if (e.target.files[0]) loadFile(e.target.files[0]); e.target.value = ''; });
   $('#fileLbl').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); $('#file').click(); } });
 
+  // Outside Claude (public page, zip) there is no AI: hide the AI-only brief button, keep everything else.
+  if (!(window.claude && typeof window.claude.use === 'function')) { const b = $('#briefAI'); if (b) b.hidden = true; }
   function renderAll() {
     renderHeader();
     if (state.model.meta.errors.length) { $('#queue').innerHTML = ''; return; }
