@@ -37,6 +37,7 @@ tests/run_tests.js    Node test runner
 - Every flag comes from a plain, deterministic rule in `engine.js`. Each flag carries the tab, row and field values it came from. The same file and date always give the same answer.
 - Claude is used for two things only: drafting an escalation email and drafting the morning brief, from the facts of the flagged items.
 - Every draft passes a **fact check**: each dollar amount, date, contract ID and row number in the text must exist in the source rows, and anything that doesn't is shown in red. In testing, it caught an invented "$5,100" and "Dec 9".
+- **The AI never counts.** Counts such as "waiting on the prior manager: 7" are worked out by the rules and handed to the AI, and a count check compares any count in the text against them. This came from a live test where the AI said 8 instead of 7.
 - If AI is unavailable, templates replace it and nothing else changes.
 
 **Built for a tired Monday.** The first screen answers "what do I do first?" Dates and upload sit in a small bar, the timeline folds away, the brief is three lines, and the labels are plain words with the industry term kept beside them ("Last day to cancel," "Vendor insurance (COI)"). IDs stay visible for traceability.
@@ -76,6 +77,18 @@ tests/run_tests.js    Node test runner
 | Fact check on every AI draft; AI text is labeled and editable | Read-only connections to Yardi and the transition tracker instead of uploads, with an IT owner and change control |
 | Nothing is sent, changed or deleted; a person copies and sends | Legal review of the contract rules; acceptance tests against two real past transitions |
 | Every flag traces to tab, row and fields; the self-test runs in the page | Usage and accuracy monitoring (dismiss rate, flags resolved before deadline), plus a rollback plan |
+
+## With another week
+
+1. **AI on the public page, done safely.** Pre-generate and label real AI drafts for the public demo, so reviewers can read AI output without an API key on a public page. In production, the AI call moves server-side behind sign-in (see `HANDOFF.md`).
+2. **Read the contracts themselves** to pull real renewal terms and notice clauses instead of relying on one spreadsheet column.
+3. **Shared review status** in a database, plus a read-only connection to the real transition tracker.
+4. **An owner-facing day-one readiness report** built from the same rules.
+5. **Tune the thresholds with the transitions team**, using how often each rule's flags get dismissed.
+
+## Handing it to IT
+
+`HANDOFF.md` covers what IT receives, what to keep and what to rebuild, who owns what, how a rule changes, a phased rollout with go/no-go gates, how we'd measure use and value, and the go-live checklist. The short version: `engine.js` is the spec and the tests prove it; the interface gets rebuilt in the company's stack; the AI call moves server-side under an enterprise agreement; uploads become read-only connections, except for the prior manager's exports.
 
 ## Deliberately not built
 

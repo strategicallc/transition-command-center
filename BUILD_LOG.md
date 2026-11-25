@@ -23,13 +23,18 @@ Times are Arizona time on Wednesday, November 25, 2026. Brief and data pack rece
 | 08:40 | Pressure-tested my own fix before building it. **My first grouping idea (20 → 8 lines) would have hidden an unowned critical task and a blocked one inside a "not started" group.** | Rejected it. Group only same task + same main reason + same severity, which gives 20 → 10 lines. Kept IDs and the industry terms for traceability and credibility. Kept the as-of date visible. |
 | 08:47 | Built the Monday view: Start here (3 cards), grouped list, one-click Draft email / Mark handled, action-first detail, 3-line brief, compact data bar, folded timeline, plain labels. Added 6 self-test checks (60/60). | |
 | 08:50 | **Defects found:** severity tags stretched tall in rows; drafting from Start here switched the list to "Everything" (109 items), which is confusing for the exact user this is for. Both fixed and re-tested live in Claude. | |
+| 09:05 | GitHub Pages failed to deploy three times with GitHub-side 500 errors (build fine, deploy step failed). Stopped retrying; the next push deployed normally. | Didn't send the public link until the new version was confirmed live. |
+| 09:33 | Public page: the no-AI message said "opened from a file," which was wrong there. Reworded it, and hid the AI-only brief button outside Claude. | |
+| 09:37 | Considered putting live AI on the public page. | **Didn't.** It would mean an API key behind a public endpoint, plus cost and abuse risk. Logged as a "with another week" item (pre-generated, labeled drafts) and as a production design (server-side, behind sign-in). |
+| 09:41 | **Second AI defect found in a live test:** the AI brief said "Prior manager (8 items)"; the rules say 7. The fact check missed it because it didn't check counts. | Fix: the rules now compute the counts and hand them to the AI with "never count items yourself," and a new count check compares any "Prior manager (N)" against the rules. Re-tested live: "Prior manager 7, Owner 1, Vendor 0, Asset team 12," check passes. |
+| 09:50 | Wrote `HANDOFF.md` for IT. | |
 
 ## Where AI helped and where it got in the way
 
 - **Helped:** writing the engine and the interface quickly; drafting emails that read like a person wrote them; turning a rules-based list into a readable morning brief.
 - **Got in the way:** the AI brief confidently misattributed people (caught in testing, fixed with better field names). The fix was to treat the AI as a writer of words, never a source of facts, and to check its numbers automatically.
-- **The pattern I'd take into the role:** deterministic rules decide; AI drafts; a fact check verifies; a person sends.
+- **The pattern I'd take into the role:** deterministic rules decide; AI drafts; a fact check verifies; a person sends. And never ask the AI to count: give it the numbers.
 
 ## Time spent
 
-About 40 minutes from first read to a tested, hosted build, plus about 35 minutes for GitHub and the Monday-morning redesign. [Add: time for the video, rehearsal and any changes you make.]
+About 40 minutes from first read to a tested, hosted build, plus about 35 minutes for GitHub and the Monday-morning redesign, and about 25 minutes for the public-page fix, the AI count fix and the IT handoff. [Add: time for the video, rehearsal and any changes you make.]

@@ -1,6 +1,6 @@
 # Test results
 
-Run: 2026-11-25T15:52:44.230Z · Node v22.23.5 · workbook: Asset_Living_Build_Exercise_Data_Pack.xlsx
+Run: 2026-11-25T16:32:57.329Z · Node v22.23.5 · workbook: Asset_Living_Build_Exercise_Data_Pack.xlsx
 As-of 2026-10-16, takeover 2026-12-01
 
 **60 of 60 passed.**
@@ -70,31 +70,12 @@ As-of 2026-10-16, takeover 2026-12-01
 
 Action queue at the README dates: 109 items (Critical 8, High 61, Medium 40).
 
-## AI path tests (headless Chrome with a simulated model, tools/ai_mock_test.py)
+## Count check (checkCounts in app/app.js)
 
-```
-mock | FLAG: AI draft. Claude wrote the wording from the facts shown on this page only. Check it against the source rows, fill every 
-mock | CHECK: Fact check: 2 of 5 amounts, dates or IDs in this draft are not in the source rows: $5,100, Dec 9. Fix or remove them before sending.
-prompt has staff-owner rule: True | prompt length 2218
-brief note: AI-written from the queue’s facts. Fact check: not in the data: $4,746, $5,100, Dec 9, VC-5002.
-mock errors: none
-none | FLAG: AI drafting isn’t available in this view (for example, when the app is opened from a file). Here is the template draft i
-none | CHECK: Fact check: all 8 amounts, dates and IDs in this draft match the source rows. Fill in each [CONFIRM] before sending.
-none errors: none
-```
+| Text | Flags expected | Flags found | Result |
+|---|---|---|---|
+| Waiting on: Prior manager (8 items), Owner (1), Asset team (11). | 2 | 2 (Prior manager 8 (rules say 7); Asset team 11 (rules say 12)) | PASS |
+| Waiting on others: 7 with the prior manager, 1 with the owner. | 0 | 0 | PASS |
+| Waiting on: Prior manager 7, Owner 1, Vendor 0, Asset team 12. | 0 | 0 | PASS |
 
-## Monday-view interaction test (tools/monday_test.py)
-
-```
-start cards: C-VC-5009, C-VC-5028, T-77
-after handling C-VC-5009 -> cards: C-VC-5028, T-77, T-86
-tile: 19 | queue: 19 items, shown as 10 lines (same task and same reason grouped)
-draft opened for: Fire/Life Safety contract ends Oct 31, no coverage on day one | draft starts: Subject: Elm Street Lofts takeover (Dec 1, 2026): SafeGuard 
-check: Fact check: all 7 amounts, dates and IDs in this draft match the source rows. Fill in each [CONFIRM] before sending.
-group 1 open rows: 2
-with handled shown: 20 items, shown as 10 lines (same task and same reason grouped)
-after undo cards: C-VC-5009, C-VC-5028, T-77
-errors: none
-```
-
-Live checks in Claude (Nov 25, 2026): AI morning brief and email drafts generated; staff-name misattribution found and fixed; Start here "Draft email" produced an AI draft and kept the Act now view after the fix (see BUILD_LOG.md).
+Live check in Claude after the fix: AI brief read "Prior manager 7, Owner 1, Vendor 0, Asset team 12"; fact check passed.
