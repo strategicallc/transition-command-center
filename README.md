@@ -14,7 +14,9 @@ A working prototype for **Scenario A, Property Transitions ("Day one without dra
 
 ## Run it
 
-- **Hosted:** the Claude artifact link (AI drafting works there).
+- **Public link, no login:** https://strategicallc.github.io/transition-command-center/. Everything works; AI drafts fall back to templates here.
+- **Hosted with AI drafting:** the Claude artifact version, shown live in the demo.
+- **Code:** https://github.com/strategicallc/transition-command-center
 - **Locally, no install:** unzip and open `index.html` in Chrome, Edge or Safari. Everything works offline except AI drafting, which falls back to templates. That fallback is deliberate.
 - **Tests:** `npm install` then `npm test`, which runs `tests/run_tests.js` against `data/Asset_Living_Build_Exercise_Data_Pack.xlsx` and writes `TEST_RESULTS.md`.
 
